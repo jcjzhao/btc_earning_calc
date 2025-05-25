@@ -15,31 +15,28 @@ st.markdown(
         font-weight: normal !important;
         line-height: 1.4 !important;
     }
-    .kpi-row {
-        margin: 0 !important;
-        padding: 0 !important;
-        line-height: 1.4 !important;
-        font-size: 16px !important;
-        font-weight: normal !important;
-    }
-    .kpi-header {
-        font-size: 18px !important;
-        font-weight: bold !important;
-        line-height: 1.4 !important;
+    .framed-section {
+        border: none !important;
+        border-bottom: 1.5px solid #eee !important;
+        background-color: transparent !important;
+        padding: 12px 0 18px 0;
+        margin-bottom: 1.5em;
     }
     table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 1em;
+        background-color: transparent !important;
     }
     th, td {
-        border: 1px solid #ddd !important;
+        border: none !important;
+        border-bottom: 1px solid #eee !important;
         padding: 8px !important;
         text-align: center !important;
         font-size: 16px !important;
+        background-color: transparent !important;
     }
     th {
-        background-color: #f2f2f2 !important;
         font-weight: bold !important;
     }
     input[type="number"]::-webkit-inner-spin-button,
@@ -62,7 +59,7 @@ st.markdown(
 # --- Title ---
 st.markdown(
     """
-    <h2 style="text-align: center;">比特币挖矿收益</h2>
+    <h1 style="text-align: center;">比特币挖矿收益</h1>
     """,
     unsafe_allow_html=True
 )
@@ -90,6 +87,7 @@ except Exception:
     real_time_network_hash_rate = 350000.0
 
 # --- Inputs (all as text_input, no +/-) ---
+st.markdown('<div class="framed-section">', unsafe_allow_html=True)
 st.markdown("#### 输入参数")
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -112,6 +110,7 @@ with col7:
     btc_price_str = st.text_input("比特币价格($)", value=str(real_time_btc_price))
 with col8:
     network_hash_rate_str = st.text_input("全网算力(TH/s)", value=str(real_time_network_hash_rate))
+st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Validation and conversion ---
 try:
@@ -181,7 +180,7 @@ if st.button("计算收益"):
             cost_to_mine_one_btc = float('inf')
 
         # --- General Metrics ---
-        st.markdown("#### 比特币关键指标")
+        st.markdown('<div class="framed-section">', unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.markdown(f"**实时比特币价格**: ${final_btc_price:,.2f}")
@@ -194,9 +193,10 @@ if st.button("计算收益"):
                 st.markdown("**挖矿成本/BTC**: 无法计算")
             else:
                 st.markdown(f"**挖矿成本/BTC**: ${cost_to_mine_one_btc:,.2f}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         # --- System Configuration Metrics ---
-        st.markdown("#### 系统配置指标")
+        st.markdown('<div class="framed-section">', unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.markdown(f"**矿机成本**: ${total_system_cost:,.0f}")
@@ -206,9 +206,10 @@ if st.button("计算收益"):
             st.markdown(f"**总功耗**: {total_power_consumption:,.2f} W")
         with col4:
             st.markdown(f"**电费效率**: {efficiency:.2f}%")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         # --- KPI Categories as Table ---
-        st.markdown("#### 关键绩效指标")
+        st.markdown('<div class="framed-section">', unsafe_allow_html=True)
         kpi_table = f"""
         | 指标              | 每日                    | 每月                    | 每年                    |
         |-------------------|-------------------------|-------------------------|-------------------------|
@@ -218,6 +219,7 @@ if st.button("计算收益"):
         | 净收益(税前)      | ${daily_net_earnings:,.2f}    | ${monthly_net_earnings:,.2f}    | ${yearly_net_earnings:,.2f}    |
         """
         st.markdown(kpi_table)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     except Exception as e:
         st.error(f"发生错误: {e}")
