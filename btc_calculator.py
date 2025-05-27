@@ -136,9 +136,9 @@ st.markdown(
     f"**比特币价格**: `${real_time_btc_price:,.2f}`  |  **全网算力**: `{real_time_network_hash_rate:,.2f} TH/s`"
 )
 if btc_price_warning:
-    st.warning(btc_price_warning)
+    st.warning(btc_price_warning + "（1分钟后自动重试）")
 if hashrate_warning:
-    st.warning(hashrate_warning)
+    st.warning(hashrate_warning + "（1分钟后自动重试）")
 
 # --- System config ---
 selected_system = systems[system_choice]
