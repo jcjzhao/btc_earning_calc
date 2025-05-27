@@ -131,9 +131,13 @@ st.markdown('</div>', unsafe_allow_html=True)
 # --- Add a divider line for better visual separation ---
 st.markdown('<hr style="margin-top: -0.2em; margin-bottom: 0.2em; border: 0; border-top: 1px solid #eee;">', unsafe_allow_html=True)
 
-# --- Show real-time BTC price and network hashrate as read-only, using Streamlit's default code formatting ---
+# --- Show real-time BTC price, network hashrate, and BTC per TH/s per day ---
+btc_per_th_per_day = (3.125 * 144) / real_time_network_hash_rate  # 当前每TH/s每天可挖BTC
+
 st.markdown(
-    f"**币价**: `${real_time_btc_price:,.2f}`  |  **全网算力**: `{real_time_network_hash_rate:,.0f} TH/s`"
+    f"**币价**: `${real_time_btc_price:,.2f}`  |  "
+    f"**全网算力**: `{real_time_network_hash_rate:,.0f} TH/s`  |  "
+    f"**每TH/s日产**: `{btc_per_th_per_day:.9f} BTC`"
 )
 if btc_price_warning:
     st.warning(btc_price_warning + "（1分钟后自动重试）")
