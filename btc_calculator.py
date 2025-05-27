@@ -133,7 +133,7 @@ st.markdown('<hr style="margin-top: -0.2em; margin-bottom: 0.2em; border: 0; bor
 
 # --- Show real-time BTC price and network hashrate as read-only, using Streamlit's default code formatting ---
 st.markdown(
-    f"**比特币价格**: `${real_time_btc_price:,.2f}`  |  **全网算力**: `{real_time_network_hash_rate:,.2f} TH/s`"
+    f"**币价**: `${real_time_btc_price:,.2f}`  |  **全网算力**: `{real_time_network_hash_rate:,.0f} TH/s`"
 )
 if btc_price_warning:
     st.warning(btc_price_warning + "（1分钟后自动重试）")
