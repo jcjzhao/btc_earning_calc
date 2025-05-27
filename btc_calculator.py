@@ -113,7 +113,7 @@ real_time_network_hash_rate, hashrate_warning = get_network_hashrate()
 # --- Inputs (modern layout) ---
 st.markdown('<div class="framed-section">', unsafe_allow_html=True)
 st.markdown("##### 输入参数")
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
     system_choice = st.selectbox("矿机型号", options=list(systems.keys()))
 with col2:
@@ -122,6 +122,8 @@ with col3:
     electricity_cost = st.number_input("电费($/kWh)", min_value=0.0, value=0.05, step=0.001, format="%.3f", help="每度电的价格")
 with col4:
     management_charge_percent = st.number_input("管理费(年化%)", min_value=0.0, value=2.0, step=0.1, format="%.2f", help="年化管理费率 (%)")
+with col5:
+    annual_hashrate_growth = st.number_input("算力年增长率(%)", min_value=0.0, value=40.0, step=0.1, format="%.1f", help="全网算力年均增长率") / 100
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Add a divider line for better visual separation ---
@@ -129,7 +131,7 @@ st.markdown('<hr style="margin-top: -0.2em; margin-bottom: 0.2em; border: 0; bor
 
 # --- Show real-time BTC price and network hashrate as read-only, using Streamlit's default code formatting ---
 st.markdown(
-    f"**比特币价格**: `${real_time_btc_price:,.2f}`  |  **全网算力**: `{real_time_network_hash_rate:,.0f} TH/s`"
+    f"**比特币价格**: `${real_time_btc_price:,.2f}`  |  **全网算力**: `{real_time_network_hash_rate:,.2f} TH/s`"
 )
 if btc_price_warning:
     st.warning(btc_price_warning)
@@ -152,11 +154,18 @@ if st.button("计算收益"):
         total_hash_rate = num_systems * hash_rate_per_system
         block_reward = 3.125
         blocks_per_day = 144
-        btc_per_th = (block_reward * blocks_per_day) / final_network_hash_rate
 
-        daily_btc_earnings = total_hash_rate * btc_per_th
-        monthly_btc_earnings = daily_btc_earnings * 30
-        yearly_btc_earnings = daily_btc_earnings * 365
+        # Daily earnings with network hashrate growth
+        daily_btc_earnings_list = []
+        for day in range(365):
+            network_hashrate_today = final_network_hash_rate * ((1 + annual_hashrate_growth) ** (day / 365))
+            btc_per_th_today = (block_reward * blocks_per_day) / network_hashrate_today
+            daily_btc_earnings_list.append(total_hash_rate * btc_per_th_today)
+
+        yearly_btc_earnings = sum(daily_btc_earnings_list)
+        monthly_btc_earnings = sum(daily_btc_earnings_list[:30])
+        daily_btc_earnings = daily_btc_earnings_list[0]
+
         daily_usd_earnings = daily_btc_earnings * final_btc_price
         monthly_usd_earnings = monthly_btc_earnings * final_btc_price
         yearly_usd_earnings = yearly_btc_earnings * final_btc_price
@@ -166,7 +175,6 @@ if st.button("计算收益"):
         monthly_electricity_cost = daily_electricity_cost * 30
         yearly_electricity_cost = daily_electricity_cost * 365
 
-        # Management fee (annual percentage of total investment)
         yearly_management_fee = total_system_cost * management_charge_percent / 100
         monthly_management_fee = yearly_management_fee / 12
         daily_management_fee = yearly_management_fee / 365
@@ -176,8 +184,8 @@ if st.button("计算收益"):
         yearly_total_cost = yearly_electricity_cost + yearly_management_fee
 
         daily_net_earnings = daily_usd_earnings - daily_total_cost
-        monthly_net_earnings = daily_net_earnings * 30
-        yearly_net_earnings = daily_net_earnings * 365
+        monthly_net_earnings = monthly_usd_earnings - monthly_total_cost
+        yearly_net_earnings = yearly_usd_earnings - yearly_total_cost
 
         if daily_btc_earnings > 0:
             cost_to_mine_one_btc = daily_total_cost / daily_btc_earnings
@@ -196,19 +204,19 @@ if st.button("计算收益"):
         st.markdown('<div class="framed-section"></div>', unsafe_allow_html=True)
         col_day, col_month, col_year = st.columns(3)
         with col_day:
-            st.markdown("**每日**")
+            st.markdown("**第1天**")
             st.markdown(f"BTC 收益: `{daily_btc_earnings:,.6f}`")
             st.markdown(f"美元收益: `${daily_usd_earnings:,.2f}`")
             st.markdown(f"成本(电+管理): `${daily_total_cost:,.2f}`")
             st.markdown(f"净收益(税前): `${daily_net_earnings:,.2f}`")
         with col_month:
-            st.markdown("**每月**")
+            st.markdown("**前30天累计**")
             st.markdown(f"BTC 收益: `{monthly_btc_earnings:,.6f}`")
             st.markdown(f"美元收益: `${monthly_usd_earnings:,.2f}`")
             st.markdown(f"成本(电+管理): `${monthly_total_cost:,.2f}`")
             st.markdown(f"净收益(税前): `${monthly_net_earnings:,.2f}`")
         with col_year:
-            st.markdown("**每年**")
+            st.markdown("**前365天累计**")
             st.markdown(f"BTC 收益: `{yearly_btc_earnings:,.6f}`")
             st.markdown(f"美元收益: `${yearly_usd_earnings:,.2f}`")
             st.markdown(f"成本(电+管理): `${yearly_total_cost:,.2f}`")
